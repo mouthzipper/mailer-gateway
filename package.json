@@ -1,0 +1,22 @@
+{
+  "name": "mailer-gateway",
+  "version": "1.0.0",
+  "description": "Mailer gateway for EskriMail",
+  "main": "server.js",
+  "scripts": {
+    "test": "npm test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rtorino/mailer-gateway.git"
+  },
+  "author": "GZ Eskrima",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/rtorino/mailer-gateway/issues"
+  },
+  "homepage": "https://github.com/rtorino/mailer-gateway",
+  "dependencies": {
+    "hapi": "^8.4.0"
+  }
+}
