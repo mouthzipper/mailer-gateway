@@ -1,7 +1,7 @@
 {
 	"dev" : {
 		"api" : {
-			"host" : "localhost",
+			"host" : "192.168.1.5",
 			"port"   : 8005,
 			"routes": {
 				"cors": true

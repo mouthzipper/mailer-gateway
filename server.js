@@ -111,7 +111,7 @@ Rabbit.configure( { connection: config.rabbit } )
 
 // route for sending template
 		server.route( {
-			path : '/getTemplates',
+			path : '/templates',
 			method: 'GET',
 			handler : function ( request, reply ) {
 					// lapin requester
@@ -126,6 +126,35 @@ Rabbit.configure( { connection: config.rabbit } )
 
 			}
 		});
+
+		server.route( {
+			path : '/templates',
+			method: 'POST',
+			config : {
+				'description' : 'create template',
+				'validate' : {
+					'payload' : {
+						'name'        : Joi.string().required().description( 'Name of the template' ),
+						'description' : Joi.string().optional().description( 'Description of the template' ),
+						'content'     : Joi.string().required().description( 'Template content' ),
+						'createdAt'   : Joi.date().optional().description( 'Template created date' )
+					}
+				},
+				handler : function ( request, reply ) {
+						// lapin requester
+						var requester = lapin.request( 'v1.template.create' );
+
+						requester.produce( request.payload, function ( error, templateData ) {
+							if ( error ) {
+								reply( error ).code( 500 );
+							}
+							reply( templateData.data );
+						} );
+				}
+			}
+
+		});
+
 	} ).catch( function ( err ) {
 		console.log( err );
 	} );
