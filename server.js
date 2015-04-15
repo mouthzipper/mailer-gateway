@@ -183,6 +183,41 @@ Rabbit.configure( { connection: config.rabbit } )
 
 		});
 
+		server.route( {
+			path : '/templates/{templateId}',
+			method: 'PUT',
+			config : {
+				'description' : 'update specific template',
+				'validate' : {
+					'params' : {
+						'templateId' : Joi.string().description( 'The id of the template' )
+					},
+					'payload' : {
+						'name'        : Joi.string().required().description( 'Name of the template' ),
+						'description' : Joi.string().optional().description( 'Description of the template' ),
+						'content'     : Joi.string().required().description( 'Template content' ),
+						'createdAt'   : Joi.date().optional().description( 'Template created date' ),
+						'id'          : Joi.string().optional().description( 'The id of the template' )
+					}
+				},
+				handler : function ( request, reply ) {
+						// lapin requester
+						var requester = lapin.request( 'v1.template.updateById' );
+						if( !request.payload.id ) {
+							request.payload.id = request.params.templateId;
+						}
+
+						requester.produce( request.payload, function ( error, templateData ) {
+							if ( error ) {
+								reply( error ).code( 500 );
+							}
+							reply( templateData.data );
+						} );
+				}
+			}
+
+		});
+
 	} ).catch( function ( err ) {
 		console.log( err );
 	} );
