@@ -154,6 +154,34 @@ Rabbit.configure( { connection: config.rabbit } )
 			}
 
 		});
+		server.route( {
+			path : '/templates/{templateId}',
+			method: 'GET',
+			config : {
+				'description' : 'get specific template',
+				'validate' : {
+					'params' : {
+						'templateId' : Joi.string().description( 'The id of the template' )
+					}
+				},
+				handler : function ( request, reply ) {
+						// lapin requester
+						var requester = lapin.request( 'v1.template.findById' );
+
+						var requestData = {
+							'id' : request.params.templateId
+						};
+
+						requester.produce( requestData, function ( error, templateData ) {
+							if ( error ) {
+								reply( error ).code( 500 );
+							}
+							reply( templateData.data );
+						} );
+				}
+			}
+
+		});
 
 	} ).catch( function ( err ) {
 		console.log( err );
