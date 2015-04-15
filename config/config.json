@@ -1,0 +1,20 @@
+{
+	"dev" : {
+		"api" : {
+			"host" : "localhost",
+			"port"   : 8005
+		},
+
+		"rabbit" : {
+			"server"   : "localhost",
+			"vhost"    : "/",
+			"user"     : "guest",
+			"password" : "guest"
+		},
+
+		"swagger" : {
+			"basePath"   : "http://localhost:8005",
+			"apiVersion" : "0.1"
+		}
+	}
+}
