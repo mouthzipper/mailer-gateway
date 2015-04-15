@@ -2,27 +2,29 @@
 
 var util   = require( 'util' );
 
-var Hapi    = require( 'Hapi' );
+var Hapi    = require( 'hapi' );
 var Rabbit  = require( 'wascally' );
 var Rabbus  = require( 'rabbus' );
 var Joi     = require( 'joi' );
 var Swagger = require( 'hapi-swagger' );
+var lapin   = require( 'lapin' )( Rabbit );
 
 var env    = process.env[ 'NODE_ENV' ] || 'dev';
 var config = require( './config/config.json' )[ env ];
 
 var server = new Hapi.Server();
+
 server.connection( config.api )
 	.register( {
-        register : Swagger,
-        options  : config.swagger
-    }, function (err) {
-        if (err) {
-            server.log(['error'], 'hapi-swagger load error: ' + err)
-        }else{
-            server.log(['start'], 'hapi-swagger interface loaded')
-        }
-    } );
+		register : Swagger,
+		options  : config.swagger
+	}, function (err) {
+		if (err) {
+			server.log(['error'], 'hapi-swagger load error: ' + err)
+		}else{
+			server.log(['start'], 'hapi-swagger interface loaded')
+		}
+	} );
 
 function GatewaySender ( rabbit ) {
 	Rabbus.Sender.call( this, rabbit, {
@@ -46,12 +48,11 @@ Rabbit.configure( { connection: config.rabbit } )
 			path   : '/sendEmail',
 			config : {
 				handler : function ( request, reply ) {
-					console.log( Joi );
 					reply();
 				},
 				description  : 'Send Email',
-        		notes        : 'Sends an email using passed object. Attributes are as follows: <br>'+
-        						'<table><tr><td>from</td><td>The e-mail address of the sender. All e-mail addresses can be plain "sender@server.com" or formatted "Sender Name <sender@server.com>"</td></tr>'+
+				notes        : 'Sends an email using passed object. Attributes are as follows: <br>'+
+								'<table><tr><td>from</td><td>The e-mail address of the sender. All e-mail addresses can be plain "sender@server.com" or formatted "Sender Name <sender@server.com>"</td></tr>'+
 								'<tr><td>sender</td><td>An e-mail address that will appear on the Sender: field</td></tr>'+
 								'<tr><td>to</td><td>Comma separated list or an array of recipients e-mail addresses that will appear on the To: field</td></tr>'+
 								'<tr><td>cc</td><td>Comma separated list or an array of recipients e-mail addresses that will appear on the Cc: field</td></tr>'+
@@ -69,7 +70,7 @@ Rabbit.configure( { connection: config.rabbit } )
 								'<tr><td>messageId </td><td>optional Message-Id value, random value will be generated if not set</td></tr>'+
 								'<tr><td>date     </td><td>optional Date value, current UTC string will be used if not set</td></tr>'+
 								'<tr><td>encoding  </td><td>optional transfer encoding for the textual parts (defaults to "quoted-printable")</td></tr></table>',
-        		tags         : [ 'api' ],
+				tags         : [ 'api' ],
 				validate     : {
 					payload : {
 						from : Joi.string().email().required(),
@@ -85,7 +86,7 @@ Rabbit.configure( { connection: config.rabbit } )
 									Joi.array().max( 500 ).items( Joi.string().email() ),
 									Joi.string().email().required()
 								),
-					 	replyTo    : Joi.string().email(),
+						replyTo    : Joi.string().email(),
 						inReplyTo  : Joi.string().max( 250 ),
 						references : Joi.alternatives(
 											Joi.array().max( 500 ).items( Joi.string().max( 250 ) ),
@@ -107,6 +108,24 @@ Rabbit.configure( { connection: config.rabbit } )
 
 
 		} );
+
+// route for sending template
+		server.route( {
+			path : '/getTemplates',
+			method: 'GET',
+			handler : function ( request, reply ) {
+					// lapin requester
+					var requester = lapin.request( 'v1.template.findAll' );
+
+					requester.produce( 'getTemplate', function ( error, templateData ) {
+						if ( error ) {
+							reply( error ).code( 500 );
+						}
+						reply( templateData.data );
+					} );
+
+			}
+		});
 	} ).catch( function ( err ) {
 		console.log( err );
 	} );
