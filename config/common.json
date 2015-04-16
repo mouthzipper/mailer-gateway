@@ -6,7 +6,7 @@
     }
   },
   "rabbitmq": {
-    "server": "192.168.59.103",
+    "server": "localhost",
     "port": 5672,
     "user": "guest",
     "pass": "guest"

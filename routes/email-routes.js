@@ -12,7 +12,7 @@ module.exports = [
       handler: function (request, reply) {
         var emailInfo = {
           from: 'gz.eskrima@gmail.com',
-          to: 'alexjander.bacalso@globalzeal.net',
+          to: 'raymond.torino@globalzeal.net',
           subject: 'Test',
           text: 'Test lang'
         };
