@@ -1,0 +1,8 @@
+emailGateway:
+  build: .
+
+  environment:
+    NODE_ENV: docker
+
+  external_links:
+    - rabbitmq

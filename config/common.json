@@ -1,0 +1,14 @@
+{
+  "api": {
+    "port": 8005,
+    "routes": {
+      "cors": true
+    }
+  },
+  "rabbitmq": {
+    "server": "192.168.59.103",
+    "port": 5672,
+    "user": "guest",
+    "pass": "guest"
+  }
+}
