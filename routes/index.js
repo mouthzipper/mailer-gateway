@@ -15,5 +15,4 @@ fs
 		var fileName = mixins.capitalize(path.basename(file, '-routes.js'));
 		routes[fileName] = require('./' + file);
 	});
-
 module.exports = routes;

@@ -38,7 +38,7 @@ function startServer() {
     } else {
       // Add all the routes within the routes folder
       for (var route in routes) {
-        server.route(routes[route]);
+      server.route(routes[route]);
       }
 
       // Start the server

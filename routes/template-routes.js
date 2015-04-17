@@ -10,9 +10,9 @@ module.exports = [
     method: 'GET',
     handler: function (request, reply) {
       // lapin requester
-      var requester = lapin.request('v1.template.findAll');
+      var requester = lapin.request('v1.templates.findAll');
 
-      requester.produce('getTemplate', function (err, template) {
+      requester.produce({}, function (err, template) {
         if (err) {
           reply(err).code(500);
         }
@@ -25,7 +25,7 @@ module.exports = [
     path: '/templates',
     method: 'POST',
     config: {
-      description: 'create template',
+      description: 'Create template',
       validate: {
         payload: {
           name: Joi.string().required()
@@ -43,8 +43,8 @@ module.exports = [
         var requester = lapin.request('v1.template.create');
 
         requester.produce(request.payload, function (err, template) {
-          if (error) {
-            reply(error).code(500);
+          if (err) {
+            reply(err).code(500);
           }
           reply(template.data);
         });
@@ -56,7 +56,7 @@ module.exports = [
     path : '/templates/{templateId}',
     method: 'GET',
     config : {
-      description: 'get specific template',
+      description: 'Get specific template',
       validate: {
         params: {
           templateId: Joi.string()
@@ -70,10 +70,10 @@ module.exports = [
         var requestData = {
           'id' : request.params.templateId
         };
-
+        // console.log( requestData );
         requester.produce(requestData, function (err, template) {
-          if (error) {
-            reply(error).code(500);
+          if ( err) {
+            reply(err).code(500);
           }
           reply(template.data);
         });
@@ -85,7 +85,7 @@ module.exports = [
     path : '/templates/{templateId}',
     method: 'PUT',
     config : {
-      description: 'update specific template',
+      description: 'Update specific template',
       validate: {
         params: {
           templateId: Joi.string()
@@ -102,17 +102,16 @@ module.exports = [
             .description('Template content'),
         }
       },
-      handler : function (request, reply) {
-        // lapin requester
-        var requester = lapin.request('v1.template.updateById');
-
+      handler : function ( request, reply) {
+         // lapin requester
+        var requester = lapin.request( 'v1.template.updateById' );
         if(!request.payload.id) {
           request.payload.id = request.params.templateId;
         }
 
-        requester.produce(request.payload, function (error, template) {
-          if (error) {
-            reply(error).code(500);
+        requester.produce(request.payload, function (err, template) {
+          if (err) {
+            reply(err).code( 500 );
           }
           reply(template.data);
         });
